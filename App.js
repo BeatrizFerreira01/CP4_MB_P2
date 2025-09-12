@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { PaperProvider } from 'react-native-paper';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './src/contexts/AuthContext';
+import { ThemeProvider, useThemeSwitcher } from './src/contexts/ThemeContext';
+import './src/i18n'; // inicializa i18n
+import Routes from './src/navigation';
 
-export default function App() {
+const queryClient = new QueryClient();
+
+function AppProviders() {
+  const { navTheme, paperTheme } = useThemeSwitcher();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider theme={paperTheme}>
+      <NavigationContainer theme={navTheme}>
+        <Routes />
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppProviders />
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
